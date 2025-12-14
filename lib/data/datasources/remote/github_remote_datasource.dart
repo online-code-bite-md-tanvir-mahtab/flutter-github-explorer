@@ -23,4 +23,22 @@ class GitHubRemoteDataSource {
       throw Exception('Failed to fetch repositories');
     }
   }
+
+  Future<List<dynamic>> searchRepositories(String query) async {
+    final response = await dio.get(
+      ApiConstants.searchRepo,
+      queryParameters: {
+        'q': query,
+        'sort': 'stars',
+        'order': 'desc',
+        'per_page': 50,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return response.data['items'];
+    } else {
+      throw Exception('Search failed');
+    }
+  }
 }

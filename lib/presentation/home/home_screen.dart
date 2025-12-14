@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_github_explorer/presentation/providers/search_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_github_explorer/presentation/details/details_screen.dart';
@@ -10,14 +11,14 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final reposAsync = ref.watch(repositoryListProvider);
+    final reposAsync = ref.watch(searchResultProvider);
     final sortType = ref.watch(sortTypeProvider);
 
     return Scaffold(
       backgroundColor: Colors.grey[50], // Light grey background for contrast
       body: RefreshIndicator(
         onRefresh: () async {
-          ref.invalidate(repositoryListProvider);
+          ref.invalidate(searchResultProvider);
         },
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
@@ -46,24 +47,20 @@ class HomeScreen extends ConsumerWidget {
               loading: () => const SliverFillRemaining(
                 child: Center(child: CircularProgressIndicator()),
               ),
-              error: (e, _) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.wifi_off, size: 48),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'No internet & no cached data',
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 12),
-                    ElevatedButton(
-                      onPressed: () {
-                        ref.invalidate(repositoryListProvider);
-                      },
-                      child: const Text('Retry'),
-                    ),
-                  ],
+              error: (e, _) => const SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.wifi_off, size: 48),
+                      SizedBox(height: 12),
+                      Text(
+                        'No internet & no cached data',
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -90,9 +87,52 @@ class HomeScreen extends ConsumerWidget {
         ),
       ),
       actions: [
+        // 1. Constrain width so it fits in the app bar
+        // 2. Center vertically to align with the Chip
+        Center(
+          child: SizedBox(
+            width: 200, // Adjust width based on your needs
+            height: 35, // Match standard ActionChip height
+            child: TextField(
+              textAlignVertical: TextAlignVertical.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+              ), // Match text style
+              cursorColor: Colors.white,
+              decoration: InputDecoration(
+                isDense: true,
+                filled: true,
+                fillColor: Colors.black87, // Match Chip background
+                hintText: 'Search...',
+                hintStyle: const TextStyle(color: Colors.white60, fontSize: 13),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: Colors.white,
+                  size: 18,
+                ),
+                contentPadding:
+                    EdgeInsets.zero, // Centers text vertically in the height
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(50), // Stadium Shape
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              onChanged: (value) {
+                print('value: $value');
+                ref.read(searchQueryProvider.notifier).state = value;
+              },
+            ),
+          ),
+        ),
+
+        const SizedBox(width: 10), // Spacing between pills
+
         Padding(
           padding: const EdgeInsets.only(right: 16.0),
           child: ActionChip(
+            // Added visual density to match the compact search bar
+            visualDensity: VisualDensity.compact,
             avatar: Icon(
               currentSort == SortType.stars ? Icons.star : Icons.update,
               size: 16,

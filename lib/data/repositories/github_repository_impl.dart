@@ -26,4 +26,28 @@ class GitHubRepositoryImpl implements GitHubRepository {
       rethrow; // if no cache, propagate error
     }
   }
+
+  @override
+  Future<List<RepositoryEntity>> searchRepositories(String query) async {
+    // 1️⃣ Always try local first
+    final localResult = localDataSource.searchLocal(query);
+
+    try {
+      // 2️⃣ Try remote search
+      final remoteResult = await remoteDataSource.searchRepositories(query);
+
+      final repos = remoteResult
+          .map<RepositoryModel>((json) => RepositoryModel.fromJson(json))
+          .toList();
+
+      // 3️⃣ Cache fresh results
+      await localDataSource.cacheRepositories(repos);
+
+      return repos;
+    } catch (_) {
+      // 4️⃣ Offline fallback
+      if (localResult.isNotEmpty) return localResult;
+      rethrow;
+    }
+  }
 }

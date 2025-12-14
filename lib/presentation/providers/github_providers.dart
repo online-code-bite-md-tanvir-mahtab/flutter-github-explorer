@@ -11,8 +11,7 @@ final dioProvider = Provider<Dio>((ref) {
   return DioClient().dio;
 });
 
-final remoteDataSourceProvider =
-    Provider<GitHubRemoteDataSource>((ref) {
+final remoteDataSourceProvider = Provider<GitHubRemoteDataSource>((ref) {
   return GitHubRemoteDataSource(ref.read(dioProvider));
 });
 

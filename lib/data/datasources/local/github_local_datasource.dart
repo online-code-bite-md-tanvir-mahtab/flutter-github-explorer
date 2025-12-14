@@ -5,15 +5,18 @@ class GitHubLocalDataSource {
   final Box _box = Hive.box('repositoriesBox');
 
   Future<void> cacheRepositories(List<RepositoryModel> repos) async {
-    final List<Map<String, dynamic>> jsonList =
-        repos.map((repo) => {
-              'name': repo.name,
-              'description': repo.description,
-              'stars': repo.stars,
-              'updatedAt': repo.updatedAt.toIso8601String(),
-              'ownerName': repo.ownerName,
-              'ownerAvatar': repo.ownerAvatar,
-            }).toList();
+    final List<Map<String, dynamic>> jsonList = repos
+        .map(
+          (repo) => {
+            'name': repo.name,
+            'description': repo.description,
+            'stars': repo.stars,
+            'updatedAt': repo.updatedAt.toIso8601String(),
+            'ownerName': repo.ownerName,
+            'ownerAvatar': repo.ownerAvatar,
+          },
+        )
+        .toList();
     await _box.put('flutter_repos', jsonList);
   }
 
@@ -21,14 +24,26 @@ class GitHubLocalDataSource {
     final List<dynamic>? jsonList = _box.get('flutter_repos');
     if (jsonList == null) return [];
     return jsonList
-        .map<RepositoryModel>((json) => RepositoryModel(
-              name: json['name'],
-              description: json['description'],
-              stars: json['stars'],
-              updatedAt: DateTime.parse(json['updatedAt']),
-              ownerName: json['ownerName'],
-              ownerAvatar: json['ownerAvatar'],
-            ))
+        .map<RepositoryModel>(
+          (json) => RepositoryModel(
+            name: json['name'],
+            description: json['description'],
+            stars: json['stars'],
+            updatedAt: DateTime.parse(json['updatedAt']),
+            ownerName: json['ownerName'],
+            ownerAvatar: json['ownerAvatar'],
+          ),
+        )
         .toList();
+  }
+
+  List<RepositoryModel> searchLocal(String query) {
+    final cached = getCachedRepositories();
+    return cached.where((repo) {
+      final q = query.toLowerCase();
+      return repo.name.toLowerCase().contains(q) ||
+          repo.description.toLowerCase().contains(q) ||
+          repo.ownerName.toLowerCase().contains(q);
+    }).toList();
   }
 }
