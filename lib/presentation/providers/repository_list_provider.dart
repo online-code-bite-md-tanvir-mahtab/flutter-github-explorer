@@ -7,9 +7,8 @@ import '../../core/utils/sort_preference.dart';
 
 final sortPreferenceProvider = Provider((ref) => SortPreference());
 
-final sortTypeProvider = StateProvider<SortType>((ref) {
-  throw UnimplementedError(); // initialized async
-});
+final sortTypeProvider =
+    StateProvider<SortType>((ref) => SortType.stars);
 
 final repositoryListProvider =
     FutureProvider<List<RepositoryEntity>>((ref) async {
