@@ -31,31 +31,39 @@ class HomeScreen extends ConsumerWidget {
                   );
                 }
                 return SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final repo = repos[index];
-                        return _RepositoryCard(repo: repo);
-                      },
-                      childCount: repos.length,
-                    ),
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final repo = repos[index];
+                      return _RepositoryCard(repo: repo);
+                    }, childCount: repos.length),
                   ),
                 );
               },
               loading: () => const SliverFillRemaining(
                 child: Center(child: CircularProgressIndicator()),
               ),
-              error: (e, _) => const SliverFillRemaining(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.wifi_off, size: 48, color: Colors.grey),
-                      SizedBox(height: 16),
-                      Text('Offline & no cached data available'),
-                    ],
-                  ),
+              error: (e, _) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.wifi_off, size: 48),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'No internet & no cached data',
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton(
+                      onPressed: () {
+                        ref.invalidate(repositoryListProvider);
+                      },
+                      child: const Text('Retry'),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -106,7 +114,7 @@ class HomeScreen extends ConsumerWidget {
               ref.read(sortPreferenceProvider).saveSortType(next);
             },
           ),
-        )
+        ),
       ],
     );
   }
@@ -138,10 +146,10 @@ class _RepositoryCard extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () {
-             Navigator.push(
-               context,
-               MaterialPageRoute(builder: (_) => DetailsScreen(repo: repo)),
-             );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => DetailsScreen(repo: repo)),
+            );
           },
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -224,7 +232,12 @@ class _RepositoryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoBadge(IconData icon, String text, Color iconColor, Color bgColor) {
+  Widget _buildInfoBadge(
+    IconData icon,
+    String text,
+    Color iconColor,
+    Color bgColor,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
