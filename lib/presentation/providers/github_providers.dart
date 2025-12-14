@@ -1,3 +1,4 @@
+import 'package:flutter_github_explorer/data/datasources/local/github_local_datasource.dart';
 import 'package:flutter_github_explorer/domain/repositories/github_repository_impl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
@@ -15,6 +16,13 @@ final remoteDataSourceProvider =
   return GitHubRemoteDataSource(ref.read(dioProvider));
 });
 
+final localDataSourceProvider = Provider<GitHubLocalDataSource>((ref) {
+  return GitHubLocalDataSource();
+});
+
 final githubRepositoryProvider = Provider<GitHubRepository>((ref) {
-  return GitHubRepositoryImpl(ref.read(remoteDataSourceProvider));
+  return GitHubRepositoryImpl(
+    ref.read(remoteDataSourceProvider),
+    ref.read(localDataSourceProvider),
+  );
 });
