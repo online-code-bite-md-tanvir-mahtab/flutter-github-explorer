@@ -7,7 +7,7 @@ import 'package:flutter_github_explorer/domain/repositories/github_repository.da
 class GitHubRepositoryImpl implements GitHubRepository {
   final GitHubRemoteDataSource remoteDataSource;
 
-  GitHubRepositoryImpl(this.remoteDataSource, [GitHubLocalDataSource read]);
+  GitHubRepositoryImpl(this.remoteDataSource, [GitHubLocalDataSource? read]);
 
   @override
   Future<List<RepositoryEntity>> getFlutterRepositories() async {
