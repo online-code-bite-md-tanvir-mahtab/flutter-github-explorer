@@ -1,16 +1,27 @@
-# flutter_github_explorer
+# Flutter GitHub Explorer
 
-A new Flutter project.
+A production-style Flutter application that explores the top Flutter
+repositories on GitHub with **offline-first architecture**.
 
-## Getting Started
+## Features
+- GitHub Search API integration
+- Offline browsing with Hive cache
+- Persistent sorting (stars / last updated)
+- Clean Architecture + Riverpod
+- Cached images for performance
+- Pull-to-refresh support
 
-This project is a starting point for a Flutter application.
+## Architecture
+This project follows Clean Architecture:
+- **Domain**: Business logic & entities
+- **Data**: API + local persistence
+- **Presentation**: Riverpod-driven UI
 
-A few resources to get you started if this is your first Flutter project:
+## Why Offline-First?
+The app always serves cached data first, ensuring usability even with
+poor or no internet connection.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## How to Run
+```bash
+flutter pub get
+flutter run
